@@ -1,0 +1,30 @@
+stages:
+  - deploy
+  - run
+
+build and push images:
+  stage: deploy
+  only:
+    - master
+  image: docker:19.03.8
+  services:
+    - docker:19.03.8-dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker pull ${CI_REGISTRY_IMAGE}:latest || true
+  script:
+    - docker build --cache-from ${CI_REGISTRY_IMAGE}:latest --tag ${CI_REGISTRY_IMAGE}:latest src
+    - docker push ${CI_REGISTRY_IMAGE}:latest
+
+run on freebox:
+  stage: run
+  image: registry.gitlab.com/kibalabs/kiba/docker-images/ssh-able:latest
+  variables:
+    RUNNABLE_DIRECTORY: "~/deployments/$CI_PROJECT_PATH/$CI_COMMIT_SHORT_SHA"
+  script:
+    - run-ssh-command "$FREEBOX_SSH_KEY" "$FREEBOX_USER" "$FREEBOX_URL" "
+        rm -rf $CI_REPOSITORY_URL $RUNNABLE_DIRECTORY &&
+        git clone $CI_REPOSITORY_URL $RUNNABLE_DIRECTORY &&
+        cd $RUNNABLE_DIRECTORY &&
+        ./run.sh
+      "
