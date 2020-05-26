@@ -3,7 +3,7 @@ set -e -o pipefail
 
 name="assets-proxy"
 url="assets.kiba.dev"
-dockerImageName="registry.gitlab.com/kibalabs/everypage/assets-proxy"
+dockerImageName="registry.gitlab.com/kibalabs/kiba/assets-proxy"
 dockerTag="latest"
 dockerImage="${dockerImageName}:${dockerTag}"
 version="$(git rev-list --count HEAD)"
