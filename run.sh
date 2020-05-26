@@ -2,7 +2,7 @@
 set -e -o pipefail
 
 name="assets-proxy"
-url="assets.kiba.dev"
+url="assets.kiba.dev,assets.evrpg.com"
 dockerImageName="registry.gitlab.com/kibalabs/kiba/assets-proxy"
 dockerTag="latest"
 dockerImage="${dockerImageName}:${dockerTag}"
