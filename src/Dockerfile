@@ -6,9 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends $build_deps
 RUN mkdir /root/temp
 
 RUN cd /root/temp \
- && wget https://hg.nginx.org/pkg-oss/raw-file/tip/build_module.sh \
-  # remove sudo from file because we are sudo
-  && sed -i -e '152,158d' -e 's/sudo //' ./build_module.sh
+ && wget https://hg.nginx.org/pkg-oss/raw-file/tip/build_module.sh
 
 RUN cd /root/temp \
   && git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git \
