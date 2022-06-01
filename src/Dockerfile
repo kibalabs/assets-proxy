@@ -1,29 +1,52 @@
-FROM nginx:1.19.6 as build
+FROM debian:stable AS builder
 
-# https://gist.github.com/muuvmuuv/f1a0e7b6a6a02c2253dc92350eab7607
-ENV build_deps "build-essential wget git apt-transport-https ca-certificates"
-RUN apt-get update && apt-get install -y --no-install-recommends $build_deps
-RUN mkdir /root/temp
+ARG version=1.19.6
+ARG modules_dir="/usr/lib/nginx/modules/"
+ARG build_dir="/usr/share/tmp"
 
-RUN cd /root/temp \
- && wget https://hg.nginx.org/pkg-oss/raw-file/tip/build_module.sh \
-  # remove sudo from file because we are sudo
-  && sed -i -e '152,158d' -e 's/sudo //' ./build_module.sh
+# Setup
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
+  ca-certificates \
+  wget \
+  git \
+  build-essential \
+  libpcre3-dev \
+  zlib1g-dev \
+  libzstd-dev
+RUN mkdir -p ${build_dir}
+RUN mkdir -p ${modules_dir}
 
-RUN cd /root/temp \
-  && git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git \
-  && cd ngx_http_substitutions_filter_module \
-  && git submodule update --init --recursive
+# Download NGINX
+RUN cd ${build_dir} \
+  && wget https://nginx.org/download/nginx-${version}.tar.gz \
+  && tar zxf nginx-${version}.tar.gz \
+  && rm nginx-${version}.tar.gz
 
-RUN cd /root/temp \
-  && sh ./build_module.sh -y -f -v $NGINX_VERSION ./ngx_http_substitutions_filter_module \
-  && pkg=$(find /root/temp/build-module-artifacts -type f -name "nginx-module-substitutionsfilter*.deb" -print) \
-  && dpkg -i ${pkg}
+# Download Modules
+RUN cd ${build_dir} \
+#   && git clone --recursive https://github.com/google/ngx_brotli.git brotli \
+  && git clone --recursive https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git subs
 
+# Install modules
+RUN cd ${build_dir}/nginx-${version} \
+  && ./configure \
+  --with-compat \
+  # --with-http_sub_module \
+  # --add-dynamic-module=../brotli  \
+  --add-dynamic-module=../subs  \
+  && make \
+  && make install
+
+# Move compiled modules
+RUN cd ${build_dir}/nginx-${version}/objs \
+  && cp *.so ${modules_dir} \
+  && chmod -R 644 ${modules_dir}
 
 FROM nginx:1.19.6
 
-COPY --from=build /usr/lib/nginx/modules/* /usr/lib/nginx/modules/
+COPY --from=builder /usr/lib/nginx/modules/* /usr/lib/nginx/modules/
+RUN ls /usr/lib/nginx/modules/
 
 WORKDIR /app
 COPY nginx.conf .

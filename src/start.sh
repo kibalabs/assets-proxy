@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e -o pipefail
 
-envsubst '${NAME} ${VERSION}' < nginx.conf > /etc/nginx/nginx.conf
+envsubst '${NAME} ${VERSION}' < /app/nginx.conf > /etc/nginx/nginx.conf
 
-nginx -g 'daemon off;'
+exec nginx -g 'daemon off;'
