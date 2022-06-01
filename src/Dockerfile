@@ -23,7 +23,7 @@ RUN cd ${build_dir} \
   && tar zxf nginx-${version}.tar.gz \
   && rm nginx-${version}.tar.gz
 
-# # Download Modules
+# Download Modules
 RUN cd ${build_dir} \
 #   && git clone --recursive https://github.com/google/ngx_brotli.git brotli \
   && git clone --recursive https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git subs
