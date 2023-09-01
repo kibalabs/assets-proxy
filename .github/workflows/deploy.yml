@@ -30,14 +30,14 @@ jobs:
       - name: executing remote ssh commands
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.APIBOX_URL }}
-          username: ${{ secrets.APIBOX_USER }}
-          key: ${{ secrets.APIBOX_SSH_KEY }}
-          port: ${{ secrets.APIBOX_PORT }}
+          host: ${{ secrets.KIBA_APP_BOX_URL }}
+          username: ${{ secrets.KIBA_APP_BOX_USER }}
+          key: ${{ secrets.KIBA_APP_BOX_SSH_KEY }}
+          port: ${{ secrets.KIBA_APP_BOX_PORT }}
           envs: DOCKER_IMAGE,NAME
           script_stop: true
           script: |
-            url="assets.kiba.dev,assets.evrpg.com"
+            url="assets.kiba.dev"
             varsFile=~/.${NAME}.vars
             docker pull ${DOCKER_IMAGE}
             docker stop ${NAME} && docker rm ${NAME} || true
