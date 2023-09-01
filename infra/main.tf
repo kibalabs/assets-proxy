@@ -22,6 +22,12 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+provider "aws" {
+  alias = "virginia"
+  profile = "kiba"
+  region = "us-east-1"
+}
+
 locals {
   project = "assets-proxy"
 }
