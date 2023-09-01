@@ -27,6 +27,25 @@ resource "aws_cloudfront_distribution" "cdn" {
     }
   }
 
+  ordered_cache_behavior {
+    target_origin_id = local.cdn_url
+    path_pattern = "/.well-known/*"
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods = ["GET", "HEAD"]
+    viewer_protocol_policy = "allow-all"
+    default_ttl = 86400
+    min_ttl = 0
+    max_ttl = 31536000
+
+    forwarded_values {
+      headers = ["Host"]
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
   default_cache_behavior {
     target_origin_id = local.cdn_url
     allowed_methods = ["GET", "HEAD", "OPTIONS"]
