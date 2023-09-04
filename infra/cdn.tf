@@ -4,6 +4,7 @@ locals {
 
 data "aws_acm_certificate" "kibadev" {
   domain = "kiba.dev"
+  most_recent = true
   provider = aws.virginia
 }
 
@@ -12,8 +13,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   is_ipv6_enabled = true
   default_root_object = "index.html"
   price_class = "PriceClass_100"
-  aliases = ["assets-cdn.kiba.dev"]
-  # aliases = ["assets-cdn.kiba.dev", "assets.evrpg.com"]
+  aliases = ["assets-cdn.kiba.dev", "assets.evrpg.com"]
 
   origin {
     origin_id = local.cdn_url
@@ -58,7 +58,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 
     forwarded_values {
       headers = ["Host"]
-      query_string = false
+      query_string = true
       cookies {
         forward = "none"
       }
