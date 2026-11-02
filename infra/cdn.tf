@@ -27,7 +27,8 @@ resource "aws_cloudfront_function" "strip_gfonts_prefix" {
   code = <<-EOT
     function handler(event) {
       var request = event.request;
-      request.uri = request.uri.replace(/^\/gfonts(-files)?/, '') || '/';
+      var prefix = request.uri.indexOf('/gfonts-files') === 0 ? '/gfonts-files' : '/gfonts';
+      request.uri = request.uri.substring(prefix.length) || '/';
       return request;
     }
   EOT
