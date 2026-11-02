@@ -22,7 +22,7 @@ resource "aws_cloudfront_origin_access_control" "storage" {
 # NOTE(krishan711): /gfonts/css2?... is served by fonts.googleapis.com/css2?... and /gfonts-files/... by fonts.gstatic.com/...
 resource "aws_cloudfront_function" "strip_gfonts_prefix" {
   name = "${local.project}-strip-gfonts-prefix"
-  runtime = "cloudfront-js-2.0"
+  runtime = "cloudfront-js-1.0"
   publish = true
   code = <<-EOT
     function handler(event) {
@@ -35,7 +35,7 @@ resource "aws_cloudfront_function" "strip_gfonts_prefix" {
 
 resource "aws_cloudfront_function" "calendly_widget" {
   name = "${local.project}-calendly-widget"
-  runtime = "cloudfront-js-2.0"
+  runtime = "cloudfront-js-1.0"
   publish = true
   code = <<-EOT
     function handler(event) {
