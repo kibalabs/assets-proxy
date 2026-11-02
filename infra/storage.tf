@@ -43,3 +43,25 @@ resource "aws_s3_bucket_acl" "storage" {
   bucket = aws_s3_bucket.storage.id
   acl = "public-read"
 }
+
+# NOTE(krishan711): cloudfront reads the bucket with origin access control
+data "aws_iam_policy_document" "storage" {
+  statement {
+    actions = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.storage.arn}/*"]
+    principals {
+      type = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "AWS:SourceArn"
+      values = [aws_cloudfront_distribution.cdn.arn]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "storage" {
+  bucket = aws_s3_bucket.storage.id
+  policy = data.aws_iam_policy_document.storage.json
+}

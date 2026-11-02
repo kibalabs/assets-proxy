@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 1.3.7"
+  required_version = "~> 1.16"
 
   # aws s3 --profile kiba mb s3://kiba-infra-assets-proxy
   backend "s3" {
@@ -12,7 +12,8 @@ terraform {
 
   required_providers {
     aws = {
-      version = "5.14.0"
+      source = "hashicorp/aws"
+      version = "6.70.0"
     }
   }
 }
